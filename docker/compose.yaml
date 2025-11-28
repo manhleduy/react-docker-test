@@ -1,0 +1,34 @@
+services:
+  database-mysql:
+      image: mysql:8.0
+      restart: always
+      environment:
+        - MYSQL_DATABASE=test
+        - MYSQL_ROOT_PASSWORD=Lem@19072006
+      ports:
+        - '3307:3306'
+      expose:
+        - 3306
+      volumes:
+        - user-data:/var/lib/mysql
+  backend:
+    build:
+      context: ../react-docker-server
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      - DB_HOST=database-mysql
+      - DB_PORT=3306
+    ports: 
+      - 8083:8083
+  frontend:
+    build:
+      context: ../react-docker-client
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - 5173:5173
+volumes:
+    user-data:
+  
+  

@@ -1,30 +1,13 @@
 import { useEffect, useState } from "react";
-import { createMethod, getMethod, deleteMethod } from "./untils/untils";
-interface User{
-  id:number,
-  name:string,
-  phonenumber:string,
-  email:string
-}
-
+import type { User } from "./untils/untils";
+import { useAppDispatch, useAppSelector } from "./untils/redux/hook";
+import { createUser, deleteUser } from "./untils/redux/userSlice";
 function App() {
-  const [error, setError]= useState(null);
-  const [loading, setLoading]= useState(false);
-  const [newUser, setNewUser]= useState<User>();
-  const [response, setResponse]= useState<any>();
-  const [users, setUsers]= useState<User[]>()
   
-  useEffect(()=>{
-    const fetchData=async()=>{
-      await getMethod(setError, setLoading, setResponse)
-    }
-    fetchData()
-  },[setUsers])
-  useEffect(()=>{
-    if(response && response!==undefined){
-      setUsers(response.users);
-    }
-  },[response]);
+  const [newUser, setNewUser]= useState<User>({id:1,name:"", email:"", phonenumber:"" });
+  const users= useAppSelector(state=>state.user);
+  const dispatch= useAppDispatch();
+
   const handleNewName:any=(value: string)=>{
     
     setNewUser((prev:any)=>{ return{...prev, name:value }});
@@ -36,8 +19,6 @@ function App() {
   const handleNewEmail:any=(value:string)=>{
     setNewUser((prev:any)=>{ return {...prev, email: value}})
   }
-  if(error) return(<div>Error</div>)
-  if(loading) return(<div>Loading</div>)
   return (
     <>
         <form className="flex flex-col items-center text-sm text-slate-800">
@@ -87,12 +68,16 @@ function App() {
                     className="h-full px-2 w-full outline-none bg-transparent" placeholder="Enter your phone number" required />
                 </div>
                 <button
+                
                 onClick={(e)=>{
-                  createMethod(setError, setLoading, setResponse, newUser);
+                  console.log(newUser);
+                  
+                  dispatch(createUser(newUser));
+                  setNewUser({id:1,name:"", email:"", phonenumber:"" })
                   e.preventDefault()
                 }} 
                 type="submit" 
-                className="flex items-center justify-center gap-1 mt-5 bg-indigo-500 hover:bg-indigo-600 text-white py-2.5 w-full rounded-full transition">
+                className="cursor-pointer flex items-center justify-center gap-1 mt-5 bg-indigo-500 hover:bg-indigo-600 text-white py-2.5 w-full rounded-full transition">
                     Submit Form
                     
                 </button>
@@ -117,7 +102,7 @@ function App() {
                     </div>
                     <button 
                     onClick={(e)=>{
-                      deleteMethod(setError, setLoading, setResponse, item.id);
+                      dispatch(deleteUser(index));
                       e.preventDefault()
                     }}
                     className="flex items-center justify-center gap-1 mt-5 bg-indigo-500 hover:bg-indigo-600 text-white py-2.5 w-fit p-2 rounded-full transition">

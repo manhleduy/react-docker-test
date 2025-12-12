@@ -46,3 +46,10 @@ export const deleteMethod=async (setError:any, setLoading:any, setResponse:any, 
         setLoading(false);
     }
 }
+
+export interface User{
+  id:number,
+  name:string,
+  phonenumber:string,
+  email:string
+}

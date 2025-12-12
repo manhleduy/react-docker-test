@@ -2,11 +2,13 @@
 import { configureStore } from '@reduxjs/toolkit'
 import userReducer from "./userSlice"
 import countReducer from "./counterSlice"
+import messageReducer from "./messageSlice"
 export const store = configureStore({
   reducer: {
     user: userReducer,
-    counter: countReducer
-  }
+    counter: countReducer,
+    message: messageReducer
+  },
 })
 
 // Get the type of our store variable

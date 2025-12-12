@@ -1,49 +1,30 @@
 import { api } from "./axios.ts";
-export const getMethod= async(setError:any , setLoading: any, setResponse: any)=>{
+export const getMethod= async()=>{
     try{
-        setLoading(true);
         const res=await  api.get("/user");
-        setResponse(res.data);
+        return res.data.users;
     }catch(e:any){
         console.log(e);
-        if(e.response && e.response!=='undefined'){
-            setError(e.response.data)
-        }
-    }finally{
-        setError(null);
-        setLoading(false);
+        return e.response
     }
 }
-export const createMethod=async (setError:any, setLoading:any, setResponse:any, data:any)=>{
+export const createMethod=async (data:any)=>{
     try{    
-        setLoading(true);
         const res= await api.post("/user", data);
-        setResponse(res.data);
+        return res.data.message;
     }catch(e:any){
         console.log(e);
-        if(e.response && e.response!=='undefined'){
-            setError(e.response.data)
-        }
+        return e.response
 
-    }finally{
-        setError(null);
-        setLoading(false);
     }
 }
-
-export const deleteMethod=async (setError:any, setLoading:any, setResponse:any, id:number)=>{
+export const deleteMethod=async (id:number)=>{
     try{    
-        setLoading(true);
         const res=await api.delete(`/user/${id}`);
-        setResponse(res.data);
+        return res.data.message;
     }catch(e:any){
         console.log(e);
-        if(e.response && e.response!=='undefined'){
-            setError(e.response.data)
-        }
-    }finally{
-        setError(null);
-        setLoading(false);
+        return e.response
     }
 }
 

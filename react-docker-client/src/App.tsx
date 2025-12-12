@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
-import type { User } from "./untils/untils";
+import { thunkCreateUser, thunkDeleteUser, thunkGetUser } from "./untils/redux/thunk";
+import { type User } from "./untils/untils";
 import { useAppDispatch, useAppSelector } from "./untils/redux/hook";
-import { createUser, deleteUser } from "./untils/redux/userSlice";
 function App() {
   
   const [newUser, setNewUser]= useState<User>({id:1,name:"", email:"", phonenumber:"" });
   const users= useAppSelector(state=>state.user);
   const dispatch= useAppDispatch();
+  useEffect(()=>{
+    thunkGetUser(dispatch);
+  },[])
+  
 
   const handleNewName:any=(value: string)=>{
     
@@ -69,12 +73,11 @@ function App() {
                 </div>
                 <button
                 
-                onClick={(e)=>{
+                onClick={()=>{
                   console.log(newUser);
                   
-                  dispatch(createUser(newUser));
+                  dispatch(thunkCreateUser(newUser));
                   setNewUser({id:1,name:"", email:"", phonenumber:"" })
-                  e.preventDefault()
                 }} 
                 type="submit" 
                 className="cursor-pointer flex items-center justify-center gap-1 mt-5 bg-indigo-500 hover:bg-indigo-600 text-white py-2.5 w-full rounded-full transition">
@@ -101,9 +104,9 @@ function App() {
                         </a>
                     </div>
                     <button 
-                    onClick={(e)=>{
-                      dispatch(deleteUser(index));
-                      e.preventDefault()
+                    onClick={()=>{
+                      dispatch(thunkDeleteUser(item.id))
+                      setNewUser({id:1,name:"", email:"", phonenumber:"" })
                     }}
                     className="flex items-center justify-center gap-1 mt-5 bg-indigo-500 hover:bg-indigo-600 text-white py-2.5 w-fit p-2 rounded-full transition">
                       delete

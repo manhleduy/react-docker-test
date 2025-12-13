@@ -2,16 +2,22 @@ import { useEffect, useState } from "react";
 import { thunkCreateUser, thunkDeleteUser, thunkGetUser } from "./untils/redux/thunk";
 import { type User } from "./untils/untils";
 import { useAppDispatch, useAppSelector } from "./untils/redux/hook";
+import { getUser } from "./untils/redux/userSlice";
 function App() {
   
   const [newUser, setNewUser]= useState<User>({id:1,name:"", email:"", phonenumber:"" });
   const users= useAppSelector(state=>state.user);
+  const [userList, setUserList]= useState<User[]>(users)
+  const message= useAppSelector(state=>state.message);
   const dispatch= useAppDispatch();
-  useEffect(()=>{
-    thunkGetUser(dispatch);
-  },[])
-  
 
+  useEffect(()=>{
+      dispatch(thunkGetUser);
+  },[setUserList])
+
+  useEffect(()=>{
+    setUserList(users);
+  }, [users])
   const handleNewName:any=(value: string)=>{
     
     setNewUser((prev:any)=>{ return{...prev, name:value }});
@@ -26,6 +32,7 @@ function App() {
   return (
     <>
         <form className="flex flex-col items-center text-sm text-slate-800">
+        {message?<h1>{message}</h1>:null}
             <p className="text-xs bg-indigo-200 text-indigo-600 font-medium px-3 py-1 rounded-full">Contact Us</p> 
             <h1 className="text-4xl font-bold py-4 text-center">Let’s Get In Touch.</h1>
             <p className="max-md:text-sm text-gray-500 pb-10 text-center">
@@ -73,11 +80,11 @@ function App() {
                 </div>
                 <button
                 
-                onClick={()=>{
-                  console.log(newUser);
+                onClick={(e)=>{
                   
                   dispatch(thunkCreateUser(newUser));
-                  setNewUser({id:1,name:"", email:"", phonenumber:"" })
+                  setUserList(prev=>[...prev, newUser]);
+                  e.preventDefault()
                 }} 
                 type="submit" 
                 className="cursor-pointer flex items-center justify-center gap-1 mt-5 bg-indigo-500 hover:bg-indigo-600 text-white py-2.5 w-full rounded-full transition">
@@ -87,7 +94,7 @@ function App() {
             </div>
         </form>
 
-        {users?.map((item, index)=>(
+        {userList?.map((item, index)=>(
           <div key={index} className="flex items-start justify-between mb-3">
                 <div className="flex items-center space-x-3">
                     <a href="" target="_blank" rel="noopener noreferrer" className="shrink-0">
@@ -105,8 +112,10 @@ function App() {
                     </div>
                     <button 
                     onClick={()=>{
-                      dispatch(thunkDeleteUser(item.id))
-                      setNewUser({id:1,name:"", email:"", phonenumber:"" })
+                      
+                      dispatch(thunkDeleteUser(item.id))  
+                      setUserList(prev=>prev.filter((_, i)=>i!==index));
+                      
                     }}
                     className="flex items-center justify-center gap-1 mt-5 bg-indigo-500 hover:bg-indigo-600 text-white py-2.5 w-fit p-2 rounded-full transition">
                       delete

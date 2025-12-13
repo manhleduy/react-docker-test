@@ -1,23 +1,26 @@
 import { useEffect, useState } from "react";
-import { thunkCreateUser, thunkDeleteUser, thunkGetUser } from "./untils/redux/thunk";
+import { fetchUser, thunkCreateUser, thunkDeleteUser} from "./untils/redux/thunk";
 import { type User } from "./untils/untils";
 import { useAppDispatch, useAppSelector } from "./untils/redux/hook";
-import { getUser } from "./untils/redux/userSlice";
+import { selectUserList } from "./untils/redux/userSlice";
 function App() {
   
   const [newUser, setNewUser]= useState<User>({id:1,name:"", email:"", phonenumber:"" });
-  const users= useAppSelector(state=>state.user);
-  const [userList, setUserList]= useState<User[]>(users)
-  const message= useAppSelector(state=>state.message);
+  const users= useAppSelector(selectUserList);
+  const [userList, setUserList]= useState<User[]>(users.userList)
+  const [status, setStatus]= useState<string>(users.status);
   const dispatch= useAppDispatch();
 
   useEffect(()=>{
-      dispatch(thunkGetUser);
-  },[setUserList])
-
+      dispatch(fetchUser());
+  },[setUserList,setStatus])
+  
   useEffect(()=>{
-    setUserList(users);
+    setUserList(users.userList);
+    setStatus(users.status);
   }, [users])
+  console.log(userList);
+
   const handleNewName:any=(value: string)=>{
     
     setNewUser((prev:any)=>{ return{...prev, name:value }});
@@ -32,7 +35,6 @@ function App() {
   return (
     <>
         <form className="flex flex-col items-center text-sm text-slate-800">
-        {message?<h1>{message}</h1>:null}
             <p className="text-xs bg-indigo-200 text-indigo-600 font-medium px-3 py-1 rounded-full">Contact Us</p> 
             <h1 className="text-4xl font-bold py-4 text-center">Let’s Get In Touch.</h1>
             <p className="max-md:text-sm text-gray-500 pb-10 text-center">
@@ -93,7 +95,8 @@ function App() {
                 </button>
             </div>
         </form>
-
+        {status==="failed"? <div>{users.error}</div>: null}
+        {status==="pending"? <div >Loading</div>:null}
         {userList?.map((item, index)=>(
           <div key={index} className="flex items-start justify-between mb-3">
                 <div className="flex items-center space-x-3">

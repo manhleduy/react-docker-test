@@ -13,6 +13,7 @@ app.use(cors({
 app.get('/api/user',async(req, res) => {
   try{
     const [response]= await connection.query("SELECT * FROM users");
+    if(response.length===0) return res.status(404).json({message: "can not find any user"})
     res.status(200).json({
       users:response,
       message: "get user data successfully"

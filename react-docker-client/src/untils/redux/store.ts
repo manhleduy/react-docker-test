@@ -1,14 +1,20 @@
 
 import { configureStore } from '@reduxjs/toolkit'
 import userReducer from "./userSlice"
-import countReducer from "./counterSlice"
 import messageReducer from "./messageSlice"
+const loggerMiddleware = (store:any) => (next:any) => (action:any) => {
+  console.log('Dispatching:', action.type);
+  const result = next(action); // Pass the action to the next middleware/reducer
+  console.log('New state:', store.getState());
+  return result;
+};
 export const store = configureStore({
   reducer: {
     user: userReducer,
-    counter: countReducer,
     message: messageReducer
   },
+  middleware: (getDefaultMiddleware)=>
+    getDefaultMiddleware().concat(loggerMiddleware)
 })
 
 // Get the type of our store variable

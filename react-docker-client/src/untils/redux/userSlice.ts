@@ -1,23 +1,53 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 import type { RootState } from './store'
 import type { User } from '../untils'
-
-const initialState: User[] =[]
+import { fetchUser } from './thunk'
+const initialState: {
+  error: any,
+  userList: User[],
+  status:string//"complete" || "fending"|| "failed"|| "idle"
+}= {
+  error: "",
+  userList: [],
+  status: "idle"
+}
 
 export const userSlice = createSlice({
   name: 'user',
   // `createSlice` will infer the state type from the `initialState` argument
   initialState,
   reducers:{
-    getUser: (_, action: PayloadAction<User[]>)=>{
-        return action.payload;
+    getUser: ()=>{
+
     }
+  },
+  extraReducers:(builder)=>{
+    builder
+    .addAsyncThunk(fetchUser,{
+      fulfilled:(state, action)=>{
+        state.error= "",
+        state.userList= action.payload,
+        state.status="complete"
+      },
+      pending:(state)=>{
+        state.status="pending"
+      },
+      rejected:(state, action)=>{
+        state.error= action.payload|| "unknown error"
+        state.userList = []
+        state.status= "failed"
+      }  
+    })
+  },
+  selectors:{
+    selectUserList:(state)=>state
+
   }
-})
+ }
+)
 
 export const { getUser} = userSlice.actions
 
 // Other code such as selectors can use the imported `RootState` type
-export const userlist = (state: RootState) => state.user;
-
+export const {selectUserList } = userSlice.selectors;
 export default userSlice.reducer

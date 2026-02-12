@@ -50,6 +50,7 @@ function App() {
                     <input 
                     onChange={(e)=>{
                       handleNewName(e.target.value);
+                      
                     }}
                     type="text" 
                     className="h-full px-2 w-full outline-none bg-transparent" placeholder="Enter your full name" required />

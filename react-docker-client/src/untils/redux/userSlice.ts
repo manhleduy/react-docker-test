@@ -1,5 +1,4 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
-import type { RootState } from './store'
 import type { User } from '../untils'
 import { fetchUser } from './thunk'
 const initialState: {
